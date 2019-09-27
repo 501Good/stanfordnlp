@@ -215,6 +215,8 @@ def load_conllu(file):
 
             # Check there is a single root node
             if len([word for word in ud.words[sentence_start:] if word.parent is None]) != 1:
+                print(sentence_start)
+                print(ud.words[sentence_start:])
                 raise UDError("There are multiple roots in a sentence")
 
             # End the sentence
@@ -456,6 +458,7 @@ def evaluate(gold_ud, system_ud):
         "Words": alignment_score(alignment),
         "UPOS": alignment_score(alignment, lambda w, _: w.columns[UPOS]),
         "XPOS": alignment_score(alignment, lambda w, _: w.columns[XPOS]),
+        "NER": alignment_score(alignment, lambda w, _: w.columns[XPOS], filter_fn=lambda w: w.columns[XPOS] != 'O'),
         "UFeats": alignment_score(alignment, lambda w, _: w.columns[FEATS]),
         "AllTags": alignment_score(alignment, lambda w, _: (w.columns[UPOS], w.columns[XPOS], w.columns[FEATS])),
         "Lemmas": alignment_score(alignment, lambda w, ga: w.columns[LEMMA] if ga(w).columns[LEMMA] != "_" else "_"),

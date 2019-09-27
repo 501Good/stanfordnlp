@@ -114,10 +114,14 @@ class CompositeVocab(BaseVocab):
         if self.keyed:
             if len(parts) == 1 and parts[0] == '_':
                 return dict()
-            parts = [x.split('=') for x in parts]
+            parts = [x.split('=') if len(x.split('=')) == 2 else [x.split('=')[0], '='.join(x.split('=')[1:])] for x in parts]
 
             # Just treat multi-valued properties values as one possible value
-            parts = dict(parts)
+            try:
+                parts = dict(parts)
+            except ValueError:
+                print(parts)
+                raise ValueError
         elif unit == '_':
             parts = []
         return parts

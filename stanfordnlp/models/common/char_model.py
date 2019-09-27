@@ -30,7 +30,11 @@ class CharacterModel(nn.Module):
     def forward(self, chars, chars_mask, word_orig_idx, sentlens, wordlens):
         embs = self.dropout(self.char_emb(chars))
         batch_size = embs.size(0)
-        embs = pack_padded_sequence(embs, wordlens, batch_first=True)
+        try:
+            embs = pack_padded_sequence(embs, wordlens, batch_first=True)
+        except ValueError:
+            print(wordlens)
+            raise ValueError
         output = self.charlstm(embs, wordlens, hx=(\
                 self.charlstm_h_init.expand(self.num_dir * self.args['char_num_layers'], batch_size, self.args['char_hidden_dim']).contiguous(), \
                 self.charlstm_c_init.expand(self.num_dir * self.args['char_num_layers'], batch_size, self.args['char_hidden_dim']).contiguous()))
